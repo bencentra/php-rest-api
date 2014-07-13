@@ -38,20 +38,20 @@ abstract class API
 
     public function processAPI() {
         switch($this->method) {
-        case 'DELETE':
-        case 'POST':
-            $this->request = $this->_cleanInputs($_POST);
-            break;
-        case 'GET':
-            $this->request = $this->_cleanInputs($_GET);
-            break;
-        case 'PUT':
-            $this->request = $this->_cleanInputs($_GET);
-            $this->file = file_get_contents("php://input");
-            break;
-        default:
-            return $this->_response('Invalid Method', 405);
-            break;
+            case 'DELETE':
+            case 'POST':
+                $this->request = $this->_cleanInputs($_POST);
+                break;
+            case 'GET':
+                $this->request = $this->_cleanInputs($_GET);
+                break;
+            case 'PUT':
+                $this->request = $this->_cleanInputs($_GET);
+                $this->file = file_get_contents("php://input");
+                break;
+            default:
+                return $this->_response('Invalid Method', 405);
+                break;
         }
 
         if ((int)method_exists($this, $this->endpoint) > 0) {
@@ -63,7 +63,7 @@ abstract class API
 
     private function _response($data, $status = 200) {
         header("HTTP/1.1 " . $status . " " . $this->_requestStatus($status));
-        return json_encode($data, JSON_PRETTY_PRINT);
+        return json_encode($data, JSON_PRETTY_PRINT); // JSON_PRETTY_PRINT only works in PHP >= 5.4
     }
 
     private function _cleanInputs($data) {
@@ -72,7 +72,8 @@ abstract class API
             foreach ($data as $k => $v) {
                 $clean_input[$k] = $this->_cleanInputs($v);
             }
-        } else {
+        } 
+        else {
             $clean_input = trim(strip_tags($data));
         }
         return $clean_input;
